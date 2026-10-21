@@ -6,8 +6,11 @@ const pool = require('../config/db');
 
 // Insere um novo usuário e retorna o registro criado
 const criar = async (nome, email, senha_hash, cargo) => {
+    const sql = 'INSERT INTO usuarios (nome, email, senha_hash, cargo) VALUES ($1, $2, $3, $4) RETURNING id, nome, email, cargo, criado_em';
+    const resultado = await pool.query(sql, [nome, email, senha_hash, cargo]);
+
+    return resultado.rows[0];
     // TODO: Implementar SQL INSERT INTO usuarios ... RETURNING id, nome, email, cargo, criado_em
-    throw new Error('usuarioRepository.criar() ainda não implementado.');
 };
 
 // Busca usuário por email para login
