@@ -19,6 +19,13 @@ const criarUsuario = async (req, res) => {
 };
 
 const verPerfil = async (req, res) => {
+    try {
+        const id = req.usuario_id;
+        const usuario = await usuarioRepository.buscarPorId(id);
+        res.json(usuario);
+    } catch (erro) {
+        res.status(500).json({mensagem: "Erro busca perfil."});
+    }
     // TODO: Buscar usuário por id (req.usuario_id)
     res.status(501).json({ mensagem: 'usuarioController.verPerfil ainda não implementado.' });
 };
