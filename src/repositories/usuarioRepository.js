@@ -15,14 +15,16 @@ const criar = async (nome, email, senha_hash, cargo) => {
 
 // Busca usuário por email para login
 const buscarPorEmail = async (email) => {
-    // TODO: Implementar SQL SELECT * FROM usuarios WHERE email = $1
-    throw new Error('usuarioRepository.buscarPorEmail() ainda não implementado.');
-};
+    const sql = 'SELECT * FROM usuarios WHERE email = $1';
+    const resultado = await pool.query(sql, [email]);
+    return resultado.rows[0];
+    };
 
 // Busca usuário por ID para o perfil
 const buscarPorId = async (id) => {
-    // TODO: Implementar SQL SELECT id, nome, email, cargo, criado_em FROM usuarios WHERE id = $1
-    throw new Error('usuarioRepository.buscarPorId() ainda não implementado.');
+    const sql = 'SELECT id, nome, email, cargo, criado_em FROM usuarios WHERE id = $1';
+    const resultado = await pool.query(sql, [id]);
+    return resultado.rows[0];
 };
 
-module.exports = { criar, buscarPorEmail, buscarPorId };
+module.exports = {criar, buscarPorEmail, buscarPorId };
