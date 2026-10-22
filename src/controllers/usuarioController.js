@@ -9,7 +9,7 @@ const login = async (req, res) => {
     try {
    
     
-const { email, senha } = req.body;
+    const { email, senha } = req.body;
 
     // 1. Busca se o email existe no banco
     const usuario = await usuarioRepository.buscarPorEmail(email);
