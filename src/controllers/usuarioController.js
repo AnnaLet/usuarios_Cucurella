@@ -84,4 +84,61 @@ const verPerfil = async (req, res) => {
     res.status(501).json({ mensagem: 'usuarioController.verPerfil ainda não implementado.' });
 };
 
-module.exports = { login, criarUsuario, verPerfil };
+const atualizarUsuario = async (req, res) => {
+    
+
+   
+
+
+
+
+    try {
+        const {nome, email, senha_hash, id} = req.body;
+
+         if(nome){
+            usuarioRepository.updateNome(id, nome);
+         }
+          if (!id) {
+            return res.status(400).json({ mensagem: 'O Id não pode ficar vazio' });
+        }
+
+         const usuario = await usuarioRepository.buscarPorId(id);
+
+        if (!nome || !email || !senha) {
+            if (!nome){
+                nome = usuario.nome;
+            }
+            if (!email){
+                email = verPerfil.usuario.email;
+            }
+            if (!senha){
+                senha = verPerfil.usuario.senha;
+            }
+            
+        }
+        
+         if (!nome & !email & !senha) {
+        
+        return res.status(400).json({ mensagem: 'Por favor, preencha pelo menos um campo para atualizar' });
+         }
+        const usuarioAtualizado = await usuarioRepository.atualizar(id, nome, email, senha_hash, id);
+        return res.status(201).json(usuarioAtualizado);  
+
+        
+        
+        
+       
+        
+       
+        
+       
+        
+
+    } catch (erro) {
+        console.error(erro.message);
+        res.status(500).json({ mensagem: 'Erro ao atualizar' });
+    }
+};
+
+
+module.exports = { login, criarUsuario, verPerfil, atualizarUsuario};

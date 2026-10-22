@@ -12,6 +12,14 @@ const criar = async (nome, email, senha_hash, cargo) => {
     return resultado.rows[0];
     // TODO: Implementar SQL INSERT INTO usuarios ... RETURNING id, nome, email, cargo, criado_em
 };
+const atualizar = async (nome, email, senha_hash, id) => {
+    const sql = 'UPDATE usuarios SET nome =$1, email = $2, senha_hash = $3 where id = $=4 RETURNING id, nome, email, cargo, criado_em';
+  
+    const resultado = await pool.query(sql, [nome, email, senha_hash, id]);
+
+    return resultado.rows[0];
+    
+};
 
 // Busca usuário por email para login
 const buscarPorEmail = async (email) => {
@@ -27,4 +35,4 @@ const buscarPorId = async (id) => {
     return resultado.rows[0];
 };
 
-module.exports = {criar, buscarPorEmail, buscarPorId };
+module.exports = {criar, buscarPorEmail, buscarPorId, atualizar };

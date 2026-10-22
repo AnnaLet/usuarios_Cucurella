@@ -8,5 +8,7 @@ const { autorizarCriacaoUsuario } = require('../middlewares/usuarioMiddleware');
 router.post('/login', usuarioController.login);
 router.get('/me', authMiddleware, usuarioController.verPerfil);
 router.post('/', authMiddleware, roleMiddleware('admin', 'SuperAdmin'), autorizarCriacaoUsuario, usuarioController.criarUsuario);
+router.put('/atualizar', authMiddleware, usuarioController.atualizarUsuario);
+
 
 module.exports = router;
