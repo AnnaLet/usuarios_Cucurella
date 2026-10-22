@@ -50,41 +50,20 @@ const criarUsuario = async (req, res) => {
 
     try {
         const { nome, email, senha, cargo } = req.body;
-        if (cargo === "SuperAdmin") {
-            if (!nome || !email || !senha || !(cargo === "admin") || !(cargo === "usuario")) {
-                return res.status(400).json({ mensagem: 'Dados incompletos. Por favor, preencha todos os campos obrigatórios.' });
-            }
-
-            const usuarioExistente = await usuarioRepository.buscarPorEmail(email);
-            if (usuarioExistente) {
-                return res.status(409).json({ mensagem: 'Já existe um usuário cadastrado com este e-mail.' });
-            }
-
-            const senha_hash = await bcrypt.hash(senha, 10);
-            
-            const novoUsuario = await usuarioRepository.criar(nome, email, senha_hash, cargo);
-            return res.status(201).json(novoUsuario);
-        }
-
-        if (cargo === "admin") {
-            if (!nome || !email || !senha || !(cargo === "usuario")) {
-                return res.status(400).json({ mensagem: 'Dados incompletos. Por favor, preencha todos os campos obrigatórios.' });
-            }
-
-            const usuarioExistente = await usuarioRepository.buscarPorEmail(email);
-            if (usuarioExistente) {
-                return res.status(409).json({ mensagem: 'Já existe um usuário cadastrado com este e-mail.' });
-            }
-
-            const senha_hash = await bcrypt.hash(senha, 10);
-            
-            const novoUsuario = await usuarioRepository.criar(nome, email, senha_hash, cargo);
-            return res.status(201).json(novoUsuario);
-        }
-
-        return res.status(403).json({ mensagem: 'Não permitido criar usuário.' })
         
+        if (!nome || !email || !senha || !cargo) {
+            return res.status(400).json({ mensagem: 'Dados incompletos. Por favor, preencha todos os campos obrigatórios.' });
+        }
 
+        const usuarioExistente = await usuarioRepository.buscarPorEmail(email);
+        if (usuarioExistente) {
+            return res.status(409).json({ mensagem: 'Já existe um usuário cadastrado com este e-mail.' });
+        }
+
+        const senha_hash = await bcrypt.hash(senha, 10);
+        
+        const novoUsuario = await usuarioRepository.criar(nome, email, senha_hash, cargo);
+        return res.status(201).json(novoUsuario);     
         
     } catch (erro) {
         console.error('Erro ao criar usuário:', erro);
