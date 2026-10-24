@@ -7,36 +7,35 @@ const jwt = require('jsonwebtoken');
  */
 const login = async (req, res) => {
     try {
-   
-    
-    const { email, senha } = req.body;
+        const { email, senha } = req.body;
 
-    // 1. Busca se o email existe no banco
-    const usuario = await usuarioRepository.buscarPorEmail(email);
-    if (!usuario) {
-        // Por segurança, não confirmamos qual campo errou.
-        return res.status(401).json({ mensagem: 'Credenciais inválidas.' });
-    }
+        // 1. Busca se o email existe no banco
+        const usuario = await usuarioRepository.buscarPorEmail(email);
+        if (!usuario) {
+            // Por segurança, não confirmamos qual campo errou.
+            return res.status(401).json({ mensagem: 'Credenciais inválidas.' });
+        }
 
-    // 2. Comparando a senha (bcrypt cuida de extrair o Salt sozinho)
-    const senhaValida = await bcrypt.compare(senha, usuario.senha_hash); // 👈 Comparação segura
+        // 2. Comparando a senha (bcrypt cuida de extrair o Salt sozinho)
+        const senhaValida = await bcrypt.compare(senha, usuario.senha_hash); // 👈 Comparação segura
 
-    if (!senhaValida) {
-        return res.status(401).json({ mensagem: 'Credenciais inválidas.' });
-    }
+        if (!senhaValida) {
+            return res.status(401).json({ mensagem: 'Credenciais inválidas.' });
+        }
 
-    // 3. Sucesso!
-    const token = jwt.sign(
-      { id: usuario.id, cargo: usuario.cargo}, 
-      process.env.JWT_SECRET, 
-      { expiresIn: '1h' }
-    );
+        // 3. Sucesso!
+        const token = jwt.sign(
+        { id: usuario.id, cargo: usuario.cargo}, 
+        process.env.JWT_SECRET, 
+        { expiresIn: '1h' }
+        );
 
-    res.json({ 
-      mensagem: 'Login realizado com sucesso!', 
-      token: token 
-    });
-      } catch (erro) {
+        res.json({ 
+            mensagem: 'Login realizado com sucesso!', 
+            token: token 
+        });
+
+    } catch (erro) {
         console.error(erro);
         res.status(500).json({ mensagem: 'Erro interno ao realizar login.' });
     }
@@ -85,54 +84,21 @@ const verPerfil = async (req, res) => {
 };
 
 const atualizarUsuario = async (req, res) => {
-    
-
-   
-
-
-
-
     try {
-        const {nome, email, senha_hash, id} = req.body;
+        const { nome, email, senha_hash } = req.body;
+        const { id } = req.params;
 
-         if(nome){
-            usuarioRepository.updateNome(id, nome);
-         }
-          if (!id) {
-            return res.status(400).json({ mensagem: 'O Id não pode ficar vazio' });
+        if (!nome && !email && !senha_hash) {
+            return res.status(400).json({ mensagem: 'Por favor, preencha pelo menos um campo para atualizar' });
         }
 
-         const usuario = await usuarioRepository.buscarPorId(id);
+        const usuarioAtualizar = await usuarioRepository.atualizar(nome, email, senha_hash, id);
 
-        if (!nome || !email || !senha) {
-            if (!nome){
-                nome = usuario.nome;
-            }
-            if (!email){
-                email = verPerfil.usuario.email;
-            }
-            if (!senha){
-                senha = verPerfil.usuario.senha;
-            }
-            
+        if (!usuarioAtualizar) {
+            return res.status(404).json({ mensagem: 'Usuário não encontrado' });
         }
-        
-         if (!nome & !email & !senha) {
-        
-        return res.status(400).json({ mensagem: 'Por favor, preencha pelo menos um campo para atualizar' });
-         }
-        const usuarioAtualizado = await usuarioRepository.atualizar(id, nome, email, senha_hash, id);
-        return res.status(201).json(usuarioAtualizado);  
 
-        
-        
-        
-       
-        
-       
-        
-       
-        
+        return res.status(200).json(usuarioAtualizar);
 
     } catch (erro) {
         console.error(erro.message);
@@ -140,5 +106,15 @@ const atualizarUsuario = async (req, res) => {
     }
 };
 
+const deletarUsuario = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await usuarioRepository.deletarUsuario(id);
+        res.status(200).json({ mensagem: 'Usuário deletado com sucesso.' });
+    } catch (erro) {
+        console.error(erro.message);
+        res.status(500).json({ mensagem: 'Erro ao deletar usuário.' });
+    }
+};
 
-module.exports = { login, criarUsuario, verPerfil, atualizarUsuario};
+module.exports = { login, criarUsuario, verPerfil, atualizarUsuario, deletarUsuario };
