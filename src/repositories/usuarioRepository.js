@@ -25,27 +25,6 @@ const atualizar = async (nome, email, senha_hash, id) => {
     return resultado.rows[0];
 };
 
-// Atualiza o nome do usuário
-const atualizarNome = async (nome, id) => {
-    const sql = 'UPDATE usuarios SET nome = $1 WHERE id = $2 RETURNING nome';
-    const resultado = await pool.query(sql, [ nome, id ]);
-    return resultado.rows[0];
-}
-
-// Atualiza o email do usuário
-const atualizarEmail = async (email, id) => {
-    const sql = 'UPDATE usuarios SET email = $1 WHERE id = $2 RETURNING email';
-    const resultado = await pool.query(sql, [ email, id ]);
-    return resultado.rows[0];
-};
-
-// Atualiza a senha do usuário
-const atualizarSenha = async (senha_hash, id) => {
-    const sql = 'UPDATE usuarios SET senha_hash = $1 WHERE id = $2 RETURNING senha_hash';
-    const resultado = await pool.query(sql, [ senha_hash, id ]);
-    return resultado.rows[0];
-}
-
 // Busca usuário por email para login
 const buscarPorEmail = async (email) => {
     const sql = 'SELECT * FROM usuarios WHERE email = $1';
@@ -71,8 +50,6 @@ module.exports = {
     buscarPorEmail, 
     buscarPorId, 
     atualizar, 
-    atualizarNome, 
-    atualizarEmail, 
-    atualizarSenha, 
+ 
     deletarUsuario 
 };
